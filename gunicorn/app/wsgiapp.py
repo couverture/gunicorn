@@ -31,11 +31,15 @@ class WSGIApplication(Application):
             from .pasterapp import paste_config
             return paste_config(self.cfg, self.cfgurl, self.relpath)
 
-        if len(args) < 1:
+        if len(args) > 0:
+            self.app_uri = args[0]
+        elif self.cfg.wsgi_app:
+            self.app_uri = self.cfg.wsgi_app
+        else:
             parser.error("No application module specified.")
 
-        self.cfg.set("default_proc_name", args[0])
-        self.app_uri = args[0]
+        self.cfg.set("default_proc_name", self.app_uri)
+
 
     def chdir(self):
         # chdir to the configured path before loading,
